@@ -13,47 +13,25 @@
 
 ###Partie du script à modifier##################################################################################################
 
-DEBUG <- 1
+# Le répertoire de travail
+setwd("PATH_TO_YOUR_DIRECTORY")
 
-if (DEBUG == 1) {
-  # Le répertoire de travail
-  setwd("/Volumes/Disk_4To")
-  
-  # Variable pour le script
-  
-  # les données :
-  DATA <- "test_aradeep_script.csv" #(chemin complet vers le fichiers de resultat Aradeepopsis du type : aradeepopsis_traits.csv)
-  
-  # Le paramètre étudié
-  VALUE <- 'plant_region_area'    # exemple : plant_region_area, class_norm_perimeter, class_senesc_area, 
-  #class_senesc_perimeter, class_antho_area, class_antho_perimeter
-  
-  # La densité de la photo en pixel par cm
-  PIXBYCM <- 122
-  
-  # Préciser si vous étudier une surface à convertir en cm2 ou un périmètre à convertir en cm
-  
-  IS_AREA <- TRUE # TRUE ou FALSE 
-} else {
-  # Le répertoire de travail
-  setwd("PATH_TO_YOUR_DIRECTORY")
-  
-  # Variable pour le script
-  
-  # les données :
-  DATA <- "results_File" #(Nom du fichier de resultat Aradeepopsis du type : aradeepopsis_traits.csv)
-  
-  # Le paramètre étudié
-  VALUE <- 'le_nom_de_la_colonne_contenant_le_parametre'    # exemple : plant_region_area, class_norm_perimeter, class_senesc_area, 
-  #class_senesc_perimeter, class_antho_area, class_antho_perimeter
-  
-  # La densité de la photo en pixel par cm
-  PIXBYCM <- Valeur_numérique
-  
-  # Préciser si vous étudier une surface à convertir en cm2 ou un périmètre à convertir en cm
-  
-  IS_AREA <- Un_booléen # TRUE ou FALSE 
-}
+# Variable pour le script
+
+# les données :
+DATA <- "results_File" #(Nom du fichier de resultat Aradeepopsis du type : aradeepopsis_traits.csv)
+
+# Le paramètre étudié
+VALUE <- 'le_nom_de_la_colonne_contenant_le_parametre'    # exemple : plant_region_area, class_norm_perimeter, class_senesc_area, 
+#class_senesc_perimeter, class_antho_area, class_antho_perimeter
+
+# La densité de la photo en pixel par cm
+PIXBYCM <- Valeur_numérique
+
+# Préciser si vous étudier une surface à convertir en cm2 ou un périmètre à convertir en cm
+
+IS_AREA <- Un_booléen # TRUE ou FALSE 
+
 
 # Variables de personnalisation du graphique pour l'analyse statistique
 #=======================================================================================================================================
