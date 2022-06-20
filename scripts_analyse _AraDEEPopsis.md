@@ -155,8 +155,6 @@ SI vous ne connaissait pas le chemin de votre répertoire vous pouvez utiliser l
 
 Dans le cadre en bas à droite, sélectionner l’onglet `Files`, parcourrez l’arborescence, entrez dans le répertoire de votre choix,  puis cliquez sur le bouton `More` avec la roue dentée bleue et sélectionnez `Set As Working Directory`
 
-<img src=".images/scripts_analyse _AraDEEPopsis/image-20210422092326570.png" alt="image-20210422092326570" style="zoom:50%;" />
-
 #### b. Les données
 
 ```R
@@ -250,8 +248,6 @@ Le code hexadécimal des couleurs est utilisé.
 
 Pour modifier la couleur, taper le code (ex : "#d9c396") dans la barre de recherche Google. La page de résultat commence par un pavé interactif pour le choix des couleurs.
 
-<img src=".images/scripts_analyse _AraDEEPopsis/image-20210517161736266.png" alt="image-20210517161736266" style="zoom:50%;" />
-
 1 - Choisissez la nuance sur la barre "Arc en ciel"
 
 2 - Déplacez le rond blanc sur la zone de votre choix
@@ -264,11 +260,9 @@ Pour modifier la couleur, taper le code (ex : "#d9c396") dans la barre de recher
 PALETTE <- "Paired"
 ```
 
-Ci dessous la liste des palettes compatibles avec les daltoniens;
+Il existe des palettes compatibles avec les daltoniens;
 
-<img src=".images/scripts_analyse _AraDEEPopsis/colopicker.png" alt="colopicker" style="zoom:50%;" />
-
-Vous pouvez aussi faire apparaitre la liste en tapant dans la console (cadre en bas à gauche) :
+Vous pouvez en faire apparaitre la liste en tapant dans la console (cadre en bas à gauche) :
 
 ```R
 display.brewer.all(colorblindFriendly = TRUE)
@@ -359,8 +353,6 @@ Le bouton `Run` vous permet d’exécuter le script ligne par ligne
 
 Le bouton `Source` exécute l’ensemble du script en un seul clic. 
 
-![Capture d’écran 2022-06-20 à 14.28.37](.images/scripts_analyse _AraDEEPopsis/Capture d’écran 2022-06-20 à 14.28.37-5728299.png)
-
 ## Sauvegarde et export des fichiers
 
 Les fichiers générés durant l’analyse sont automatiquement enregistrés dans votre répertoire de travail.
@@ -391,15 +383,7 @@ Les graphiques ne sont pas automatiquement sauvegarder. La sauvegarde manuelle v
 
 Pour cela il faut utiliser le bouton `Export` du cadran en bas à droite (dans lequel le graph s’affiche), choisir `Save as image`
 
-<img src=".images/scripts_analyse _AraDEEPopsis/Capture d’écran 2022-06-20 à 14.33.37.png" alt="Capture d’écran 2022-06-20 à 14.33.37" style="zoom:50%;" />
-
-
-
-L’interface suivante apparait. Vous pouvez alors modifier le format, et la taille puis avoir une prévisualisation de votre graph.
-
-<img src=".images/scripts_analyse _AraDEEPopsis/Capture d’écran 2022-06-20 à 14.35.28.png" alt="Capture d’écran 2022-06-20 à 14.35.28" style="zoom:50%;" />
-
-
+L’interface de sauvegarde apparait. Vous pouvez alors modifier le format, et la taille puis avoir une prévisualisation de votre graph.
 
 ## Citations
 
