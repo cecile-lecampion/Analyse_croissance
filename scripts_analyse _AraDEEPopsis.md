@@ -17,7 +17,7 @@ Les scripts permettent :
 - de sélectionner le paramètre que vous souhaitez analyser
 - de faire une analyse statistique des données en fonction de leur distribution, en calculant l'intervalle de confiance
 - de tracer la courbe de croissance (moyenne du paramètre choisi) avec l'erreur standard
-- d'ajouter les marques de significativité sur chaque point de la courbe
+- faire un bar plot pour un jour donné avec marque de significativité sur le graph
 
 ## Choix du script à utiliser
 
@@ -51,14 +51,14 @@ Si vous respecter les contraintes dans le nommage des photos le script pourra s�
 
 Le script est composé de plusieurs partie : 	
 
-- une partie à modifier qui permet de lepersonnaliser 
+- une partie à modifier qui permet de le personnaliser 
 -  une partie regroupant les fonctions utilisées dans le script
 - la partie principale : celle qui fait l'analyse
 
 Les modifications que vous devez faire sont dans la première partie qui est commune au deux scripts.
 
 ```R
-###Partie du script à modifier#############################################################################
+###Partie du script à modifier###########################################################
 
 # Le répertoire de travail
 setwd("PATH_TO_YOUR_DIRECTORY")
@@ -78,6 +78,16 @@ setwd("PATH_TO_YOUR_DIRECTORY")
  # Préciser si vous étudier une surface à convertir en cm2 ou un périmètre à convertir en cm
   
  IS_AREA <- Un_booléen # TRUE ou FALSE 
+
+# Définir le jour pour la représentation des résultat en bar plot
+GrowingDay <- Valeur_numérique
+
+# Définir la lignée de référence
+# Pour le cas 1
+RefLine <- "nom_de_la_lignée_de_référence" # exemple : "col_0"
+
+# Pour le cas 2
+RefCond <- "nom_de_la_condition_de_référence" # exemple : "normal-light"
 
 # Variables de personnalisation du graphique pour l'analyse statistique
 #======================================================================================================================
@@ -349,9 +359,7 @@ Le bouton `Run` vous permet d’exécuter le script ligne par ligne
 
 Le bouton `Source` exécute l’ensemble du script en un seul clic. 
 
-<img src=".images/scripts_analyse _AraDEEPopsis/tempsnip.png" alt="tempsnip" style="zoom: 80%;" />
-
-
+![Capture d’écran 2022-06-20 à 14.28.37](.images/scripts_analyse _AraDEEPopsis/Capture d’écran 2022-06-20 à 14.28.37-5728299.png)
 
 ## Sauvegarde et export des fichiers
 
@@ -375,8 +383,6 @@ ou
 
 - Les résultats du test de Dunn : `Dunn.txt`
 
-Les données de la courbe de croissance : `Summary_curve.txt`
-
 Les informations sur la session : `InfoSession.txt` 
 
 ## Sauvegarde des graphiques
@@ -385,13 +391,15 @@ Les graphiques ne sont pas automatiquement sauvegarder. La sauvegarde manuelle v
 
 Pour cela il faut utiliser le bouton `Export` du cadran en bas à droite (dans lequel le graph s’affiche), choisir `Save as image`
 
+<img src=".images/scripts_analyse _AraDEEPopsis/Capture d’écran 2022-06-20 à 14.33.37.png" alt="Capture d’écran 2022-06-20 à 14.33.37" style="zoom:50%;" />
 
 
-![Capture](.images/scripts_analyse _AraDEEPopsis/Capture.PNG)
 
 L’interface suivante apparait. Vous pouvez alors modifier le format, et la taille puis avoir une prévisualisation de votre graph.
 
-<img src=".images/scripts_analyse _AraDEEPopsis/image-20210421163134477.png" alt="image-20210421163134477" style="zoom: 50%;" />
+<img src=".images/scripts_analyse _AraDEEPopsis/Capture d’écran 2022-06-20 à 14.35.28.png" alt="Capture d’écran 2022-06-20 à 14.35.28" style="zoom:50%;" />
+
+
 
 ## Citations
 
