@@ -7,9 +7,16 @@
 # Patrick Hüther, Niklas Schandry, Katharina Jandrasits, Ilja Bezrukov, Claude Becke - Gregor-Mendel-Institute - 
 # Vienne https://www.biorxiv.org/content/10.1101/2020.04.01.018192v2 
 
-# Pour le cas 1, on suit la croissance de plusieurs lignées dans le temps. Le nom des images est donc construit comme suit :
+# Pour le cas 1, on suit la croissance de plusieurs lignées dans le temps. 
+# Le nom des images est donc construit comme suit : 
 # Day_Line_index.jpg
-  
+
+# On obtient 3 graphs :
+## - plot intervalle de confiance pour chaque jour
+## - Une courbe de croissance avec toutes les lignées sur la durée de l'analyse
+## - Un barplot pour visualisé la situation à un jour donné
+
+
 ###Partie du script à modifier##################################################################################################
 
 # Le répertoire de travail
@@ -30,6 +37,12 @@ PIXBYCM <- Valeur_numérique
 # Préciser si vous étudier une surface à convertir en cm2 ou un périmètre à convertir en cm
 
 IS_AREA <- Un_booléen # TRUE ou FALSE 
+
+# Définir le jour pour la représentation des résultat en bar plot
+GrowingDay <- Valeur_numérique
+
+# Définir la lignée de référence
+RefLine <- "nom_de_la_lignée_de_référence" # exemple : "col-0"
 
 
 # Variables de personnalisation du graphique pour l'analyse statistique
@@ -64,7 +77,7 @@ TITLE <- ""
 Y_AXIS <- ""
 
 ################################################################################################################################
-  
+
 # Installation des pacakges
 
 if (!require(tidyr)) { install.packages("tidyr") }
@@ -149,7 +162,9 @@ check_kruskal <- function(kruskal_pval) {
 # retourne les pvalue dans un dataframe
 #=======================================================================================================================================
 test_dunn <- function() {
-  pval <- as.data.frame(df_data %>% group_by(Day) %>% dunn_test(mesure ~ Line, p.adjust.method = "BH"))
+  pval <- as.data.frame(df_data%>%
+                          mutate(Line = fct_relevel(Line, target_order)) %>% 
+                          group_by(Day) %>% dunn_test(mesure ~ Line, p.adjust.method = "BH"))
   print(df_data %>% group_by(Day) %>% dunn_test(mesure ~ Line, p.adjust.method = "BH"))
   return(pval)
 }
@@ -159,9 +174,12 @@ test_dunn <- function() {
 # construit autour de la moyenne
 #=======================================================================================================================================
 plot_normal <- function(df, my_colours, my_summary) {
-  p <- ggplot(data=df, aes(x=Line, y=mesure)) +
+  p <- df %>%
+    mutate(Line = fct_relevel(Line, 
+                              target_order)) %>%
+    ggplot( aes(x=Line, y=mesure)) +
     geom_quasirandom(dodge.width=0.8,alpha = 0.6, colour=COULEUR) +
-    geom_pointrange(data=my_summary, 
+    geom_pointrange(data=my_summary%>% mutate(Line = fct_relevel(Line,  target_order)), 
                     aes(ymin=mesure - ci, ymax=mesure + ci, color=Line),
                     position=position_dodge(width=0.8)) + 
     scale_colour_manual(values=my_colours) +
@@ -185,9 +203,12 @@ plot_not_normal <- function(df, my_colours, conf_int) {
   # La colonne "median" doit porter le nom "mesured_value" pour le ggplot
   names(conf_int)[4] <- "mesure"
   
-  p <- ggplot(data=df, aes(x=Line, y=mesure)) +
+  p <- df %>%
+    mutate(Line = fct_relevel(Line, 
+                              target_order)) %>%
+    ggplot( aes(x=Line, y=mesure)) +
     geom_quasirandom(dodge.width=0.8, alpha = 0.6, colour=COULEUR) +
-    geom_pointrange(data=conf_int, aes(ymin=Percentile.lower, ymax=Percentile.upper, 
+    geom_pointrange(data=conf_int%>% mutate(Line = fct_relevel(Line,  target_order)), aes(ymin=Percentile.lower, ymax=Percentile.upper, 
                                        color=Line), position=position_dodge(width=0.8)) +
     scale_colour_manual(values=my_colours) +
     scale_x_discrete(name = "") +
@@ -201,16 +222,6 @@ plot_not_normal <- function(df, my_colours, conf_int) {
   print(p)
 }
 
-#=======================================================================================================================================
-# permet d'ajouter les éléments de significativité contenu dans le resulat du test post hoc sur le ggplot 
-#=======================================================================================================================================
-add_pval <- function(i, df) {
-  result <- geom_text(data = data.frame(x = i, y = summary_max$ymax[i] , 
-                                        label = paste(df[i, 10] ) ), 
-                      mapping = aes(x = x, y = y, label = label), 
-                      inherit.aes = FALSE)
-  return(result)
-}
 
 ###Corps du script#######################################################################################################################
 
@@ -223,7 +234,7 @@ add_pval <- function(i, df) {
 data <- read.csv(DATA, header = TRUE)
 
 # A ce stade les 80 colonnes du fichiers de résultat sont chargées : il faut extraire la colonne contenant le parmètre d'interet
-df_data <- data %>% select(file, VALUE)
+df_data <- data %>% select(file, all_of(VALUE))
 
 # Faire de chaque éléments du nom des photo une colonne qui permettra de grouper les éléments.
 df_data <- tidyr::separate(data = df_data, col = file, c("Day",  "Line", "Index"), sep = "_", remove=TRUE)
@@ -255,6 +266,12 @@ library(dplyr) # pour les fonction %>%, group_by, summarise, select
 
 # Define color
 my_colours = brewer.pal(n = 9, PALETTE)[9:3]
+
+# Créer un objet target_order pour forcer l'ordre dans les graph 
+L <- levels(df_data$Line)
+L <- L[!(L %in% RefLine)]
+target_order <- c(RefLine, L)
+
 
 # Determining data normality status
 shapiro_df <- df_data %>%
@@ -304,13 +321,14 @@ if(flag_normal == TRUE) {
   
   # Summary
   conf_int <- groupwiseMedian(data = df_data,
-                                var = "mesure",
-                                group = c("Day", "Line"),
-                                conf       = 0.95,
-                                R          = 5000,
-                                percentile = TRUE,
-                                bca        = FALSE,
-                                digits     = 3)
+                              var = "mesure",
+                              group = c("Day", "Line"),
+                              conf       = 0.95,
+                              R          = 5000,
+                              percentile = TRUE,
+                              bca        = FALSE,
+                              digits     = 3)
+  
   
   # Plot
   plot_not_normal(df_data, my_colours, conf_int)
@@ -342,13 +360,13 @@ if(flag_normal == TRUE) {
 summary <- df_data %>% dplyr::group_by(Day, Line) %>%
   summarise(mean = mean(mesure), sd= sd(mesure))
 
-# Préparer les donnée spour l'ajout de la significativité
-summary_max <- summary %>% group_by(Day) %>% slice_max(mean)
-summary_max$ymax <- (summary_max$mean+summary_max$sd)+ 0.6
 
 # Faire la courbe
 
-p2 <- ggplot(summary, aes(x = Day, y = mean, group = 1, color = Line)) + 
+p2 <- summary %>%
+  mutate(Line = fct_relevel(Line, 
+                            target_order)) %>%
+  ggplot( aes(x = Day, y = mean, group = 1, color = Line)) + 
   geom_point() + 
   geom_line(aes(group = Line)) +
   geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2,
@@ -357,36 +375,65 @@ p2 <- ggplot(summary, aes(x = Day, y = mean, group = 1, color = Line)) +
   scale_colour_manual(values=my_colours)+
   labs(title=TITLE, x="Jours", y = Y_AXIS, color = "Lignées")
 
-# Ajoute les éléments de significativité sur la courbe pour chaque point
-p3 <- p2
+print(p2)
 
+# Sauver les fichiers
+write.table(summary, file = "Summary_curve.txt", 
+            quote = FALSE, row.names = FALSE, sep = '\t')
+
+#___________________________________________________________________________________________________________________________________
+# Situation au jour GrowingDay
+#___________________________________________________________________________________________________________________________________
+
+
+# Préparation pour ajouter les signe de significativité sur le barplot. 
+#La comparaison se fait par rapport à la lignée de référence définie au début dans :RefLine
 if(flag_normal == TRUE) {
   if(flag_anova == TRUE) {
-    for (i in 1 : nrow(tukey_results)) {
-      p3 <- p3 + add_pval(i, tukey_results)
-    }
-    print(p3)
+    df <- dplyr::filter(tukey_results, grepl(GrowingDay, Day), grepl(RefLine, group1))
   }else {
-    print(p3)
     print("les données ne sont pas significativement différentes, le test de Tukey n'a pas été réalisé.")
   }
   
 }else {
   if(flag_kruskal == TRUE) {
-    for (i in 1 : nrow(pval_dunn)) {
-      p3 <- p3 + add_pval(i, pval_dunn)
-    }
-    print(p3)
+    df <- dplyr::filter(pval_dunn, grepl(GrowingDay, Day), grepl(RefLine, group1))
   }else {
-    print(p3)
     print("les données ne sont pas significativement différentes, le test de Dunn n'a pas été réalisé.")
   }
 }
-  
 
-# Sauver les fichiers
-write.table(summary, file = "Summary_curve.txt", 
-            quote = FALSE, row.names = FALSE, sep = '\t')
+x <- rep(NA, ncol(df))
+df <- rbind(x, df)
+df[1,] <- c(GrowingDay, "mesure", RefLine, RefLine, rep(x="", 6))  
+
+# Préparation des données
+
+df2 <- dplyr::filter(summary, grepl(GrowingDay, Day))
+df2 <- df2[match(target_order, df2$Line),]
+
+# joindre les deux tableau
+df2 <- cbind(df2, df$p.adj.signif)
+colnames(df2)[5] <- "Labels"
+
+# Plot
+
+ggplot(df2%>% mutate(Line = fct_relevel(Line,  target_order)),
+       aes(x = as.factor(Day), y = mean, fill = Line, label = Labels)) +
+  geom_bar(stat="identity", position=position_dodge(width = 0.6), width = 0.5) +
+  scale_fill_manual(values=my_colours) +
+  geom_errorbar(aes( x = as.factor(Day), 
+                     ymin=mean -sd, 
+                     ymax=mean+sd), 
+                width=.2, position=position_dodge(width = 0.6)) +
+  geom_text(aes(x = as.factor(Day), y= mean+sd + 0.05 * (mean+sd), 
+                label = Labels),
+            size = 3, position = position_dodge(0.6), inherit.aes = TRUE) +
+  theme_classic() +
+  theme(legend.title=element_blank()) +
+  labs(title= sprintf("Surface des plantes après %d jours de croissance",GrowingDay) , 
+       x = "Nombre de jours de croissance", y = "Surface des plantes en cm2")
+
 
 #Environnement
 if (!require(devtools)) { install.packages("devtools") }
