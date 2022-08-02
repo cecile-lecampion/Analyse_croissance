@@ -304,7 +304,7 @@ if(flag_normal == TRUE) {
   flag_anova <- check_anova(anova_results)
   if (flag_anova == TRUE) {
     tukey_results <- as.data.frame(df_data %>% mutate(Treatment = fct_relevel(Treatment, target_order)) %>% 
-      group_by(Day) %>%  tukey_hsd(mesure ~ Treatment)
+      group_by(Day) %>%  tukey_hsd(mesure ~ Treatment))
   }
   
   # Sauver les fichiers
