@@ -301,7 +301,9 @@ if(flag_normal == TRUE) {
   # Stats
   anova_results <- df_data %>% group_by(Day) %>%  anova_test(mesure ~ Line)
   flag_anova <- check_anova(anova_results)
-  if (flag_anova == TRUE) {tukey_results <- df_data %>% group_by(Day) %>%  tukey_hsd(mesure ~ Line)
+  if (flag_anova == TRUE) {
+    tukey_results <- as.data.frame(df_data %>% mutate(Line = fct_relevel(Line, target_order)) %>% 
+      group_by(Day) %>%  tukey_hsd(mesure ~ Line)
   }
   
   # Sauver les fichiers
@@ -403,9 +405,9 @@ if(flag_normal == TRUE) {
   }
 }
 
-x <- rep(NA, ncol(df))
+x <- c(GrowingDay, "mesure", RefLine, RefLine, rep(x="", 6))
 df <- rbind(x, df)
-df[1,] <- c(GrowingDay, "mesure", RefLine, RefLine, rep(x="", 6))  
+
 
 # Préparation des données
 
